@@ -197,23 +197,25 @@ class Singularity:
         from packaging.version import parse
 
         if not self.checked:
-            if not shutil.which("singularity"):
-                raise WorkflowError(
-                    "The singularity command has to be "
-                    "available in order to use singularity "
-                    "integration."
-                )
-            try:
-                v = subprocess.check_output(
-                    ["singularity", "--version"], stderr=subprocess.PIPE
-                ).decode()
-            except subprocess.CalledProcessError as e:
-                raise WorkflowError(
-                    f"Failed to get singularity version:\n{e.stderr.decode()}"
-                )
-            if v.startswith("apptainer"):
-                if self.parseversion(v) < parse("1.0.0"):
-                    raise WorkflowError("Minimum apptainer version is 1.0.0.")
-            elif self.parseversion(v) < parse("2.4.1"):
-                raise WorkflowError("Minimum singularity version is 2.4.1.")
-            self._version = v
+            if self.frontend == "singularity":
+                if not shutil.which("singularity"):
+                    raise WorkflowError(
+                        "The singularity command has to be "
+                        "available in order to use singularity "
+                        "integration."
+                    )
+                try:
+                    v = subprocess.check_output(
+                        ["singularity", "--version"], stderr=subprocess.PIPE
+                    ).decode()
+                except subprocess.CalledProcessError as e:
+                    raise WorkflowError(
+                        f"Failed to get singularity version:\n{e.stderr.decode()}"
+                    )
+                if v.startswith("apptainer"):
+                    if self.parseversion(v) < parse("1.0.0"):
+                        raise WorkflowError("Minimum apptainer version is 1.0.0.")
+                elif self.parseversion(v) < parse("2.4.1"):
+                    raise WorkflowError("Minimum singularity version is 2.4.1.")
+                self._version = v
+            # TODO: Add verification for enroot
