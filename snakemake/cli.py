@@ -1798,6 +1798,13 @@ def get_argument_parser(profiles=None):
         "If this flag is not set, the singularity directive is ignored.",
     )
     group_singularity.add_argument(
+        "--singularity-frontend",
+        default="singularity",
+        choices=["singularity", "enroot"],
+        help="Choose the singularity frontend for installing environments. "
+        "Singularity recommended.",
+    )
+    group_singularity.add_argument(
         "--singularity-prefix",
         metavar="DIR",
         help="Specify a directory in which singularity images will be stored."
@@ -2389,6 +2396,7 @@ def main(argv=None):
             conda_cleanup_pkgs=args.conda_cleanup_pkgs,
             list_conda_envs=args.list_conda_envs,
             use_singularity=args.use_singularity,
+            singularity_frontend=args.singularity_frontend,
             use_env_modules=args.use_envmodules,
             singularity_prefix=args.singularity_prefix,
             shadow_prefix=args.shadow_prefix,

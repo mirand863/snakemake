@@ -366,10 +366,11 @@ class DAG(DAGExecutorInterface):
             for job in self.jobs
             if job.container_img_url
         }
+        frontend = self.workflow.singularity_frontend
 
         for img_url, is_containerized in img_set:
             if img_url not in self.container_imgs:
-                img = singularity.Image(img_url, self, is_containerized)
+                img = singularity.Image(frontend, img_url, self, is_containerized)
                 self.container_imgs[img_url] = img
 
     def pull_container_imgs(self, dryrun=False, quiet=False):

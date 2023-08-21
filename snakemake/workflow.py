@@ -111,6 +111,7 @@ class Workflow(WorkflowExecutorInterface):
         conda_frontend=None,
         conda_prefix=None,
         use_singularity=False,
+        singularity_frontend=None,
         use_env_modules=False,
         singularity_prefix=None,
         singularity_args="",
@@ -197,6 +198,7 @@ class Workflow(WorkflowExecutorInterface):
         self._conda_frontend = conda_frontend
         self._conda_prefix = conda_prefix
         self._use_singularity = use_singularity
+        self._singularity_frontend = singularity_frontend
         self._use_env_modules = use_env_modules
         self.singularity_prefix = singularity_prefix
         self._singularity_args = singularity_args
@@ -452,6 +454,10 @@ class Workflow(WorkflowExecutorInterface):
     @property
     def conda_frontend(self):
         return self._conda_frontend
+
+    @property
+    def singularity_frontend(self):
+        return self._singularity_frontend
 
     @property
     def shadow_prefix(self):

@@ -29,12 +29,13 @@ def get_snakemake_searchpath_mountpoints():
 
 
 class Image:
-    def __init__(self, url, dag, is_containerized):
+    def __init__(self, frontend, url, dag, is_containerized):
         if " " in url:
             raise WorkflowError("Invalid singularity image URL containing whitespace.")
 
         self.singularity = Singularity()
 
+        self.frontend = frontend
         self.url = url
         self._img_dir = dag.workflow.persistence.container_img_path
         self.is_containerized = is_containerized
@@ -54,20 +55,30 @@ class Image:
         if self.is_local:
             return
         if dryrun:
-            logger.info(f"Singularity image {self.url} will be pulled.")
+            logger.info(f"{self.frontend} image {self.url} will be pulled.")
             return
-        logger.debug(f"Singularity image location: {self.path}")
+        logger.debug(f"{self.frontend} image location: {self.path}")
         if not os.path.exists(self.path):
-            logger.info(f"Pulling singularity image {self.url}.")
+            logger.info(f"Pulling {self.frontend} image {self.url}.")
             try:
-                p = subprocess.check_output(
-                    [
+                if self.frontend == "singularity":
+                    command = [
                         "singularity",
                         "pull",
                         "--name",
                         f"{self.hash}.simg",
                         self.url,
-                    ],
+                    ]
+                elif self.frontend == "enroot":
+                    command = [
+                        "enroot",
+                        "import",
+                        "--output",
+                        f"{self.hash}.sqsh",
+                        self.url,
+                    ]
+                p = subprocess.check_output(
+                    command,
                     cwd=self._img_dir,
                     stderr=subprocess.STDOUT,
                 )
